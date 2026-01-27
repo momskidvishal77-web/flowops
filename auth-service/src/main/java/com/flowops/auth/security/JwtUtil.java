@@ -1,5 +1,6 @@
 package com.flowops.auth.security;
 
+import java.security.Key;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -27,5 +28,9 @@ public class JwtUtil {
 				.signWith(Keys.hmacShaKeyFor(secret.getBytes()))
 				.compact();
 	}
+	
+	  private Key getSigningKey() {
+	        return Keys.hmacShaKeyFor(secret.getBytes());
+	    }
 
 }
