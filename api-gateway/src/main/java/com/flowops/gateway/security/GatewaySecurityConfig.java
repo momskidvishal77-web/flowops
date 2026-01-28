@@ -9,18 +9,25 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 public class GatewaySecurityConfig {
 
     @Bean
-    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 
-        return http
-                .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
-                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
+        http
+            //  Disable default security features
+            .csrf(ServerHttpSecurity.CsrfSpec::disable)
+            .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
+            .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
 
-                .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/auth/**").permitAll()   // allow login/register
-                        .anyExchange().permitAll()               // allow all for now
-                )
+            //  Authorization rules
+            .authorizeExchange(exchanges -> exchanges
+                .pathMatchers(
+                        "/auth/login",
+                        "/auth/register",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**"
+                ).permitAll()
+                .anyExchange().authenticated()
+            );
 
-                .build();
+        return http.build();
     }
 }
